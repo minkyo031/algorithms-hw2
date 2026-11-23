@@ -27,3 +27,9 @@ The experiments use deterministic seed-generated URL keys, fixed M=4093, and 1,0
 - In-memory data is reset on restart.
 - Starting template was not directly cloned; this is a standalone implementation with matching named directories/commands. Transfer files into a repository created from the official template after reviewing it.
 - GitHub Issues, Copilot agent history, authentic human edits, feature branches, GitHub pushes, actual mobile testing, and personalized report details cannot be fabricated. Complete them in your own GitHub account and verify the final public URL.
+HW2 Verification
+- Tests: 13 passed (make test)
+- Experiments: completed (make experiment)
+- Web: URL shortening and /table verified
+- Report: 2-page PDF prepared
+   복사
