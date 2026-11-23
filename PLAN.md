@@ -9,3 +9,9 @@
 8. Implement http.server UI, /table diagnostics and proxy-aware URLs.
 9. Review differences from theoretical trends, verify tests/server, create a two-page report.
 10. In the user's own GitHub template repository, reproduce the assigned issue/feature-branch/commit/push workflow. Human must review AI output and record authentic actions and failures.
+Implementation Constraints
+- Do not use Python dict, set, or built-in hash() in the implementation under src/.
+- Generate short codes from sequential integers using Base62, not from hash values.
+- Follow test-driven development: write and review tests before implementing the corresponding functionality.
+- Use separate feature branches for development stages and merge them into develop before the final merge into main.
+- Verify that all tests pass before merging changes.
