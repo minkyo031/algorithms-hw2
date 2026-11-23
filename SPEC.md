@@ -1,30 +1,22 @@
-# 명세: URL 단축기
+# SPEC: URL Shortener
 
-<!-- TEMPLATE: 이 줄은 지우세요. 지우지 않은 SPEC.md는 tools/catchup.sh가 샘플로 덮어씁니다. -->
+## 1. Goal
+Create an HTTP(S) URL shortening service powered by a custom Horner-hashed table. Support both separate chaining and linear probing without Python dict/set/hash in `src/`.
 
-초안은 에이전트가 쓰고, **본인이 읽고 고칩니다.** 무엇을 고쳤는지는 이슈에 댓글로 남깁니다.
-에이전트는 이 파일을 읽고 구현합니다. 여기 적지 않은 것은 에이전트가 마음대로 정합니다.
+## 2. Encoding
+`encode(n)` uses 0-9, a-z, A-Z in that order, with zero encoded as `0`; `decode(s)` is inverse. Reject negatives, empty codes and unsupported characters.
 
-## 1. 무엇을 만드는가
+## 3. Data structures
+`HashTable(capacity,max_load)` is separate chaining implemented with linked nodes. `LinearProbingHashTable` uses open addressing, wraps around the last slot, and raises `OverflowError` if full and resizing is disabled. Both support `put`, `get`, `get_with_cost`, `entries`. Repeated keys replace values without increasing size. Horner hash computes `(31*h+ord(c)) % capacity` for each character. Automatic resize when max_load is enabled, disabled with `max_load=None`.
 
-<!-- 한두 문장. 누가, 무엇을 넣으면, 무엇이 나오는가 -->
+## 4. Shortener
+`URLShortener(table_type='chaining'|'linear')` stores URL-to-code and code-to-URL mappings using custom tables. Unique sequential integers beginning at 1 are encoded with Base62; they are **not** derived from hashes. Repeated identical URLs return the original code. Unknown code returns `None`. Data is in-memory, so restarting clears it.
 
-## 2. base62 인코딩
+## 5. Web UI
+`/` presents input and an algorithm selector; POST `/shorten` returns a clickable link; `/<mode>/<code>` redirects to the URL; `/table` shows table slots, keys, values, links, Horner computations and linear-probe displacement. On Codespaces, forwarded host/protocol headers are preferred to local headers.
 
-<!-- 함수 이름과 입력·출력. 글자 순서(0-9, a-z, A-Z?). 0은? 음수는? 잘못된 글자는? -->
+## 6. Edge cases and validation
+Only absolute `http://` and `https://` URLs. Reject blank strings, whitespace and control characters, `ftp://` or missing host, invalid ports, and URLs longer than 2048 characters. Test Base62 0/61/62; collision, wraparound, full linear table; duplicate inserts; missing keys; growing tables; identical URLs; distinct URLs; and invalid URL inputs.
 
-## 3. 해시 테이블
-
-<!-- 충돌 처리 방식, 해시 함수, 처음 크기, 언제 늘리는가, 쓰면 안 되는 것 -->
-
-## 4. 단축기
-
-<!-- shorten(url)과 expand(code). 같은 URL을 두 번 넣으면? 없는 코드는? 잘못된 URL은? -->
-
-## 5. 웹 서버
-
-<!-- 어떤 주소로 무엇을 요청하면 무엇이 돌아오는가 -->
-
-## 6. 경계 사례
-
-<!-- 테스트로 옮길 것들을 목록으로. 많을수록 좋습니다 -->
+## 7. Experiments
+Fixed M=4093 and `max_load=None`. Chaining alpha=0.25..4. Compare both tables alpha=0.1..0.9 with matching input keys and capacity. Record mean successful/failed lookup cost and compare to theoretical formulas. Chaining counts nodes compared; linear probing counts slots inspected (including the terminating empty slot).
