@@ -20,3 +20,13 @@ Only absolute `http://` and `https://` URLs. Reject blank strings, whitespace an
 
 ## 7. Experiments
 Fixed M=4093 and `max_load=None`. Chaining alpha=0.25..4. Compare both tables alpha=0.1..0.9 with matching input keys and capacity. Record mean successful/failed lookup cost and compare to theoretical formulas. Chaining counts nodes compared; linear probing counts slots inspected (including the terminating empty slot).
+
+8. Error Handling
+
+Invalid URL input must not create a shortened URL.
+
+The web interface must display an error message when URL validation fails.
+
+Requests for unknown short codes must return HTTP 404.
+
+The service must continue running after invalid input without losing existing mappings.
